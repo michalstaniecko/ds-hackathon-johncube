@@ -4,16 +4,16 @@
       Długość okresu w dniach
       <div class="row pb-3">
         <div class="col-sm-10 col-md-8 col-lg-6">
-          <VueSlider :min="1" :max="21" :marks="true"/>
+          <VueSlider v-model="period" :min="1" :max="21" :marks="true"/>
         </div>
       </div>
     </div>
-    <b-table striped hover :fields="fieldsAll" :items="items">
+    <b-table striped hover :fields="fieldsAll" :items="items" v-if="fields">
       <template #cell(country)="data">
         {{ data.value }}
       </template>
       <template #cell(I)="data">
-        {{ data.value }}
+        {{ data.value }} population {{ itemsAll[data.item.country].population }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(II)="data">
@@ -47,11 +47,14 @@
 </template>
 
 <script>
+  import axios from 'axios'
+
   export default {
     name: "Table",
 
     data() {
       return {
+        period: 1,
         fieldsDataset: [
           {key: 'I', sortable: true},
           {key: 'II', sortable: true},
@@ -62,16 +65,50 @@
         fields: [
           {key: 'country', sortable: true}
         ],
-        items: [
-          {country: 'Poland', ...{I: 4, II: 6, III: 3, IV: 8, V: 10}},
-          {country: 'Germany', ...{I: 7, II: 4, III: 8, IV: 10, V: 3}}
-        ]
+        items: [],
+        itemsAll: []
       }
+    },
+
+    methods: {
+      requestData() {
+        axios.get('http://localhost:3000')
+            .then(({data}) => {
+              console.log(data["Afghanistan"])
+            })
+      },
+      getDataset() {
+        new Promise((resolve, reject) => {
+          axios.get('http://localhost:3000')
+              .then(({data}) => {
+                this.itemsAll = data
+                resolve(Object.keys(data).map(country => {
+                  return {
+                    country: data[country].name,
+                    I: data[country].lastDays[0],
+                    II: data[country].lastDays[1],
+                    III: data[country].lastDays[2],
+                    IV: data[country].lastDays[3],
+                    V: data[country].lastDays[4]
+                  }
+                }))
+
+              })
+        })
+      }
+    },
+
+    created() {
+      this.getDataset()
+          .then(data => this.items = data)
     },
 
     computed: {
       fieldsAll() {
         return [...this.fields, ...this.fieldsDataset, ...['actions']]
+      },
+      itemsAll() {
+
       }
     }
   }
