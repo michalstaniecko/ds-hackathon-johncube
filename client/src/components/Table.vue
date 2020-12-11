@@ -13,7 +13,7 @@
         {{ data.value }}
       </template>
       <template #cell(I)="data">
-        {{ data.value }} population {{ itemsAll[data.item.country].population }}
+        {{ data.value }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(II)="data">
@@ -72,24 +72,23 @@
 
     methods: {
       requestData() {
-        axios.get('http://localhost:3000')
+        axios.get('http://localhost:3000/?period=5')
             .then(({data}) => {
-              console.log(data["Afghanistan"])
+              console.log(data)
             })
       },
       getDataset() {
-        new Promise((resolve, reject) => {
-          axios.get('http://localhost:3000')
+        return new Promise((resolve, reject) => {
+          axios.get('http://192.168.2.187:3000/?period=5')
               .then(({data}) => {
                 this.itemsAll = data
                 resolve(Object.keys(data).map(country => {
                   return {
-                    country: data[country].name,
-                    I: data[country].lastDays[0],
-                    II: data[country].lastDays[1],
-                    III: data[country].lastDays[2],
-                    IV: data[country].lastDays[3],
-                    V: data[country].lastDays[4]
+                    country: country,
+                    I: data[country].periods[0].diff.confirmed,
+                    II: data[country].periods[1].diff.confirmed,
+                    III: data[country].periods[2].diff.confirmed,
+                    IV: data[country].periods[3].diff.confirmed
                   }
                 }))
 
@@ -99,6 +98,7 @@
     },
 
     created() {
+      this.requestData()
       this.getDataset()
           .then(data => this.items = data)
     },
