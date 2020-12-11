@@ -25,7 +25,7 @@
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(IV)="data">
-        {{ data.value }}
+        {{ data.value }} {{data}}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(V)="data">
@@ -79,10 +79,17 @@
       },
       getDataset() {
         return new Promise((resolve, reject) => {
-          axios.get('http://192.168.2.187:3000/?period=5')
+          axios.get('http://localhost:3000/?period=5')
               .then(({data}) => {
                 this.itemsAll = data
                 resolve(Object.keys(data).map(country => {
+                  console.log({
+                    country: country,
+                    I: data[country].periods[0].diff.confirmed,
+                    II: data[country].periods[1].diff.confirmed,
+                    III: data[country].periods[2].diff.confirmed,
+                    IV: data[country].periods[3].diff.confirmed
+                  })
                   return {
                     country: country,
                     I: data[country].periods[0].diff.confirmed,
