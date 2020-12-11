@@ -70,10 +70,10 @@ const parseData = async (period) => {
                 tmp.diff.recovered = currentPeriod.diff.recovered - lastPeriod.diff.recovered
                 tmp.diff.deaths = currentPeriod.diff.deaths - lastPeriod.diff.deaths
 
-                console.log(tmp)
+                //console.log(tmp)
 
                 returnData[i].periods.push(tmp)
-
+                lastPeriod = data[i].days[x];
             } else {
                 lastPeriod = data[i].days[x];
             }
