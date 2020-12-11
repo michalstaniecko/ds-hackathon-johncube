@@ -1,9 +1,6 @@
 <template>
   <div id="app" class="container-fluid">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <h1>CCC: COVID-19 Country Comparison</h1>
     <router-view/>
   </div>
 </template>

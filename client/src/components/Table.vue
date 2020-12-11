@@ -13,28 +13,63 @@
         {{ data.value }}
       </template>
       <template #cell(I)="data">
-        {{itemsAll[data.item.country].periods[0].realDiff.confirmed}}<br/>
-        {{ data.value }}
-        <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        <div :class="{
+          'bg-success':itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 0 ,
+          'bg-warning': (itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 >= 0 && itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 5),
+          'bg-danger': (itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 >= 5)
+        }">
+          {{ itemsAll[data.item.country].periods[0].realDiff.confirmed }}<br/>
+          {{ data.value }}
+          <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+
+        </div>
       </template>
       <template #cell(II)="data">
-        {{itemsAll[data.item.country].periods[1].realDiff.confirmed}}<br/>
-        {{ data.value }}
-        <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+
+        <div :class="{
+          'bg-success':itemsAll[data.item.country].periods[1].diffAvg.confirmed * 1000000 < 0 ,
+          'bg-warning': (itemsAll[data.item.country].periods[1].diffAvg.confirmed * 1000000 >= 0 && itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 5),
+          'bg-danger': (itemsAll[data.item.country].periods[1].diffAvg.confirmed * 1000000 >= 5)
+        }">
+          {{ itemsAll[data.item.country].periods[1].realDiff.confirmed }}<br/>
+          {{ data.value }}
+          <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        </div>
       </template>
       <template #cell(III)="data">
-        {{itemsAll[data.item.country].periods[2].realDiff.confirmed}}<br/>
-        {{ data.value }}
-        <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+
+        <div :class="{
+          'bg-success':itemsAll[data.item.country].periods[2].diffAvg.confirmed * 1000000 < 0 ,
+          'bg-warning': (itemsAll[data.item.country].periods[2].diffAvg.confirmed * 1000000 >= 0 && itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 5),
+          'bg-danger': (itemsAll[data.item.country].periods[2].diffAvg.confirmed * 1000000 >= 5)
+        }">
+          {{ itemsAll[data.item.country].periods[2].realDiff.confirmed }}<br/>
+          {{ data.value }}
+          <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        </div>
       </template>
       <template #cell(IV)="data">
-        {{itemsAll[data.item.country].periods[3].realDiff.confirmed}}<br/>
-        {{ data.value }}
-        <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+
+        <div :class="{
+          'bg-success':itemsAll[data.item.country].periods[3].diffAvg.confirmed * 1000000 < 0 ,
+          'bg-warning': (itemsAll[data.item.country].periods[3].diffAvg.confirmed * 1000000 >= 0 && itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 5),
+          'bg-danger': (itemsAll[data.item.country].periods[3].diffAvg.confirmed * 1000000 >= 5)
+        }">
+          {{ itemsAll[data.item.country].periods[3].realDiff.confirmed }}<br/>
+          {{ data.value }}
+          <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        </div>
       </template>
       <template #cell(V)="data">
-        {{ data.value }}
-        <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        <div :class="{
+          'bg-success':itemsAll[data.item.country].periods[4].diffAvg.confirmed * 1000000 < 0 ,
+          'bg-warning': (itemsAll[data.item.country].periods[4].diffAvg.confirmed * 1000000 >= 0 && itemsAll[data.item.country].periods[0].diffAvg.confirmed * 1000000 < 5),
+          'bg-danger': (itemsAll[data.item.country].periods[4].diffAvg.confirmed * 1000000 >= 5)
+        }">
+          {{ itemsAll[data.item.country].periods[4].realDiff.confirmed }}<br/>
+          {{ data.value }}
+          <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
+        </div>
       </template>
       <template #cell(actions)="data">
         <b-button size="sm" @click="data.toggleDetails">
@@ -43,7 +78,7 @@
       </template>
       <template #row-details="row">
         <b-card>
-          Wykres
+          Tu będzie wykres
         </b-card>
       </template>
     </b-table>
@@ -89,7 +124,7 @@
       getDataset() {
         this.tableLoading = true
         return new Promise((resolve, reject) => {
-          axios.get(`http://localhost:3000/?period=${this.period}`)
+          axios.get(`http://ds-hackathon.johncube.pl/bridge.php?period=${this.period}`)
               .then(({data}) => {
                 this.tableLoading = false
                 this.itemsAll = data
@@ -99,7 +134,8 @@
                     I: data[country].periods[0].diff.confirmed,
                     II: data[country].periods[1].diff.confirmed,
                     III: data[country].periods[2].diff.confirmed,
-                    IV: data[country].periods[3].diff.confirmed
+                    IV: data[country].periods[3].diff.confirmed,
+                    V: data[country].periods[4].diff.confirmed,
                   }
                 }))
 
@@ -109,7 +145,7 @@
     },
 
     created() {
-      this.requestData()
+      //this.requestData()
       this.getDataset()
           .then(data => this.items = data)
     },
@@ -131,6 +167,21 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss">
+  .bg-success {
+    svg {
+      transform: rotate(45deg);
+    }
+  }
+  .bg-warning {
+    svg {
+      transform: rotate(-10deg);
+    }
+  }
+  .bg-danger {
+    svg {
+      transform: rotate(-45deg);
+    }
+  }
 
 </style>
