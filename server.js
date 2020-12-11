@@ -1,0 +1,14 @@
+const express = require("express")
+const port = 3000;
+
+const app = express()
+
+const parseData = () => {
+
+}
+
+app.get('/', (req, res) => {
+    res.send("Hello")
+})
+
+app.listen(port, () => console.log("Server runnin"))
