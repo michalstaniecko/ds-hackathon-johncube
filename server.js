@@ -47,15 +47,40 @@ const data = require('./data.json')
 
 const parseData = async (period) => {
     let returnData = {}
+    period += 1;
     for (let i in data) {
-        console.log("====")
+        console.log("====", i)
         returnData[i] = {}
-        returnData[i].name = i
         returnData[i].population = data[i].population
+        returnData[i].periods = []
 
-        returnData[i].lastDays = []
         let lastPeriod;
-        for (let x = data[i].days.length - 5 * period; x < data[i].days.length; x += period) {
+        let j = 0;
+        for (let x = data[i].days.length - (5 * period); x < data[i].days.length; x += period) {
+            if(j !== 0){
+
+                let currentPeriod = data[i].days[x]
+                let tmp = data[i].days[x]
+                
+                tmp.incremental.confirmed = currentPeriod.incremental.confirmed - lastPeriod.incremental.confirmed
+                tmp.incremental.recovered = currentPeriod.incremental.recovered - lastPeriod.incremental.recovered
+                tmp.incremental.deaths = currentPeriod.incremental.deaths - lastPeriod.incremental.deaths
+
+                tmp.diff.confirmed = currentPeriod.diff.confirmed - lastPeriod.diff.confirmed
+                tmp.diff.recovered = currentPeriod.diff.recovered - lastPeriod.diff.recovered
+                tmp.diff.deaths = currentPeriod.diff.deaths - lastPeriod.diff.deaths
+
+                console.log(tmp)
+
+                returnData[i].periods.push(tmp)
+
+            } else {
+                lastPeriod = data[i].days[x];
+            }
+
+            j++;
+        }
+        /*for (let x = data[i].days.length - (5 * period); x < data[i].days.length; x += period) {
             lastPeriod = data[i].days[x].incremental.confirmed - data[i].days[x - period].incremental.confirmed
             // console.log(lastPeriod)
             // console.log(x)
@@ -66,6 +91,9 @@ const parseData = async (period) => {
         for (let j = 0; j < data[i].days.length; j++) {
             returnData[i].points.push({ x: j, y: data[i].days[j].incremental.confirmed })
         }
+        //*/
+
+
     }
 
     return returnData
