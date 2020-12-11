@@ -8,49 +8,9 @@ app.use(cors())
 
 const data = require('./data.json')
 
-// "Afghanistan": {
-//     "population": 38928341,
-//         "totals": {
-//         "deaths": 253719,
-//             "recovered": 5166205,
-//                 "confirmed": 7435755
-//     },
-//     "avg": {
-//         "deaths": 0.006517590872932397,
-//             "recovered": 0.13271063876058833,
-//                 "confirmed": 0.19101135083049134
-//     },
-//     "days": [
-//     {
-//         "date": "2020-01-23",
-//         "timestamp": 1579734000,
-//         "incremental": {
-//             "deaths": 0,
-//             "recovered": 0,
-//             "confirmed": 0,
-//             "avg": {
-//                 "deaths": 0,
-//                 "recovered": 0,
-//                 "confirmed": 0
-//             }
-//         },
-//         "diff": {
-//             "deaths": 0,
-//             "recovered": 0,
-//             "confirmed": 0,
-//             "avg": {
-//                 "deaths": 0,
-//                 "recovered": 0,
-//                 "confirmed": 0
-//             }
-//         }
-//     },
-// ]
-// }
-
 const parseData = async (period) => {
     let returnData = {}
-    period += 1;
+    //period += 1;
     for (let i in data) {
         console.log("====", i)
         returnData[i] = {}
@@ -59,18 +19,19 @@ const parseData = async (period) => {
 
         let lastPeriod;
         let j = 0;
-        for (let x = data[i].days.length - (5 * period); x < data[i].days.length; x += period) {
+        for (let x = data[i].days.length - (6 * period); x < data[i].days.length; x += period) {
             if(j !== 0){
 
                 let currentPeriod = data[i].days[x]
                 let tmp = {
                     date: currentPeriod.date,
-                    diff: {}
-                }; //data[i].days[x]
+                    diff: {},
+                    incremental: {}
+                };
                 
-                // tmp.incremental.confirmed = currentPeriod.incremental.confirmed - lastPeriod.incremental.confirmed
-                // tmp.incremental.recovered = currentPeriod.incremental.recovered - lastPeriod.incremental.recovered
-                // tmp.incremental.deaths = currentPeriod.incremental.deaths - lastPeriod.incremental.deaths
+                tmp.incremental.confirmed = currentPeriod.incremental.confirmed;
+                tmp.incremental.recovered = currentPeriod.incremental.recovered;
+                tmp.incremental.deaths = currentPeriod.incremental.deaths;
 
                 tmp.realDiff = {
                     confirmed: currentPeriod.diff.confirmed,
@@ -84,7 +45,11 @@ const parseData = async (period) => {
                     deaths: currentPeriod.diff.deaths - lastPeriod.diff.deaths,
                 }
 
-                //console.log(tmp)
+                tmp.diffAvg = {
+                    confirmed: tmp.diff.confirmed / returnData[i].population,
+                    recovered: tmp.diff.recovered / returnData[i].population,
+                    deaths: tmp.diff.deaths / returnData[i].population,
+                }
 
                 returnData[i].periods.push(tmp)
                 lastPeriod = data[i].days[x];
@@ -94,20 +59,6 @@ const parseData = async (period) => {
 
             j++;
         }
-        /*for (let x = data[i].days.length - (5 * period); x < data[i].days.length; x += period) {
-            lastPeriod = data[i].days[x].incremental.confirmed - data[i].days[x - period].incremental.confirmed
-            // console.log(lastPeriod)
-            // console.log(x)
-            returnData[i].lastDays.push(data[i].days[x].incremental.confirmed - data[i].days[x - period].incremental.confirmed)
-        }
-        
-        returnData[i].points = []
-        for (let j = 0; j < data[i].days.length; j++) {
-            returnData[i].points.push({ x: j, y: data[i].days[j].incremental.confirmed })
-        }
-        //*/
-
-
     }
 
     return returnData
