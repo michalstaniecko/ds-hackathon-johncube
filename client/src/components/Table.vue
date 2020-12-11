@@ -4,7 +4,7 @@
       Długość okresu w dniach
       <div class="row pb-3">
         <div class="col-sm-10 col-md-8 col-lg-6">
-          <VueSlider v-model="period" :min="1" :max="21" :marks="true"/>
+          <VueSlider v-model="period" :min="1" :max="21" :marks="true" @change="periodChange"/>
         </div>
       </div>
     </div>
@@ -13,19 +13,23 @@
         {{ data.value }}
       </template>
       <template #cell(I)="data">
+        {{itemsAll[data.item.country].periods[0].realDiff.confirmed}}<br/>
         {{ data.value }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(II)="data">
+        {{itemsAll[data.item.country].periods[1].realDiff.confirmed}}<br/>
         {{ data.value }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(III)="data">
+        {{itemsAll[data.item.country].periods[2].realDiff.confirmed}}<br/>
         {{ data.value }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(IV)="data">
-        {{ data.value }} {{data}}
+        {{itemsAll[data.item.country].periods[3].realDiff.confirmed}}<br/>
+        {{ data.value }}
         <b-icon-arrow-right-circle-fill></b-icon-arrow-right-circle-fill>
       </template>
       <template #cell(V)="data">
@@ -54,7 +58,7 @@
 
     data() {
       return {
-        period: 1,
+        period: 5,
         fieldsDataset: [
           {key: 'I', sortable: true},
           {key: 'II', sortable: true},
@@ -66,11 +70,16 @@
           {key: 'country', sortable: true}
         ],
         items: [],
-        itemsAll: []
+        itemsAll: [],
+        tableLoading: false
       }
     },
 
     methods: {
+      periodChange(value) {
+        this.period = value
+      },
+
       requestData() {
         axios.get('http://localhost:3000/?period=5')
             .then(({data}) => {
@@ -78,18 +87,13 @@
             })
       },
       getDataset() {
+        this.tableLoading = true
         return new Promise((resolve, reject) => {
-          axios.get('http://localhost:3000/?period=5')
+          axios.get(`http://localhost:3000/?period=${this.period}`)
               .then(({data}) => {
+                this.tableLoading = false
                 this.itemsAll = data
                 resolve(Object.keys(data).map(country => {
-                  console.log({
-                    country: country,
-                    I: data[country].periods[0].diff.confirmed,
-                    II: data[country].periods[1].diff.confirmed,
-                    III: data[country].periods[2].diff.confirmed,
-                    IV: data[country].periods[3].diff.confirmed
-                  })
                   return {
                     country: country,
                     I: data[country].periods[0].diff.confirmed,
@@ -116,6 +120,12 @@
       },
       itemsAll() {
 
+      }
+    },
+
+    watch: {
+      period() {
+        this.getDataset()
       }
     }
   }
