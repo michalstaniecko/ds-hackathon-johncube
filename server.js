@@ -63,15 +63,26 @@ const parseData = async (period) => {
             if(j !== 0){
 
                 let currentPeriod = data[i].days[x]
-                let tmp = data[i].days[x]
+                let tmp = {
+                    date: currentPeriod.date,
+                    diff: {}
+                }; //data[i].days[x]
                 
-                tmp.incremental.confirmed = currentPeriod.incremental.confirmed - lastPeriod.incremental.confirmed
-                tmp.incremental.recovered = currentPeriod.incremental.recovered - lastPeriod.incremental.recovered
-                tmp.incremental.deaths = currentPeriod.incremental.deaths - lastPeriod.incremental.deaths
+                // tmp.incremental.confirmed = currentPeriod.incremental.confirmed - lastPeriod.incremental.confirmed
+                // tmp.incremental.recovered = currentPeriod.incremental.recovered - lastPeriod.incremental.recovered
+                // tmp.incremental.deaths = currentPeriod.incremental.deaths - lastPeriod.incremental.deaths
 
-                tmp.diff.confirmed = currentPeriod.diff.confirmed - lastPeriod.diff.confirmed
-                tmp.diff.recovered = currentPeriod.diff.recovered - lastPeriod.diff.recovered
-                tmp.diff.deaths = currentPeriod.diff.deaths - lastPeriod.diff.deaths
+                tmp.realDiff = {
+                    confirmed: currentPeriod.diff.confirmed,
+                    recovered: currentPeriod.diff.recovered,
+                    deaths: currentPeriod.diff.deaths,
+                }
+
+                tmp.diff = {
+                    confirmed: currentPeriod.diff.confirmed - lastPeriod.diff.confirmed,
+                    recovered: currentPeriod.diff.recovered - lastPeriod.diff.recovered,
+                    deaths: currentPeriod.diff.deaths - lastPeriod.diff.deaths,
+                }
 
                 //console.log(tmp)
 
